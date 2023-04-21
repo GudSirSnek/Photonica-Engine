@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Photonica",
+			"command": "gcc",
+			"args": [
+				"-g",
+				"src/*.c",
+				"engine/src/*.c",
+				"-o",
+				"build/game.exe",
+				"-Iengine/include",
+				"-IC:/Include/SDL2/include",
+				"-LC:/Include/SDL2/lib/x64",
+				"-lSDL2main",
+				"-lSDL2"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
