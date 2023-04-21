@@ -12,8 +12,8 @@
 				"-o",
 				"build/game.exe",
 				"-Iengine/include",
-				"-IC:/Include/SDL2/include",
-				"-LC:/Include/SDL2/lib/x64",
+				"-Iinclude",
+				"-Llib/SDL2",
 				"-lSDL2main",
 				"-lSDL2"
 			],
