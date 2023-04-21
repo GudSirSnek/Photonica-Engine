@@ -63,18 +63,10 @@ int main(int argc, char* args[]) {
     //game_is_running = initialize_window();
     game_is_running = 1;
     pe_init();
-    pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
-    pe_createRenderer();
+    //pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
+    //pe_createRenderer();
     setup();
     SDL_Event event;
-    Entity player;
-    const Uint8 *keys;
-
-    player.x = 400;
-    player.y = 300;
-
-    SDL_Rect temp = {400, 300, 100, 100};
-    player.rect = temp;
     
     while (game_is_running) {
        
@@ -84,35 +76,12 @@ int main(int argc, char* args[]) {
                 game_is_running = FALSE;
                 break;
        }
-       
-        keys = SDL_GetKeyboardState(NULL);
-        if (keys[SDL_SCANCODE_UP]){
-            player.y -= 10;
-            player.rect.y -=10;
-        }
-        else if (keys[SDL_SCANCODE_DOWN]){
-            player.y += 10;
-            player.rect.y +=10;
-        }
-        if (keys[SDL_SCANCODE_LEFT]){
-            player.x -= 10;
-            player.rect.x -=10;
-        }
-        else if (keys[SDL_SCANCODE_RIGHT]){
-            player.x += 10;
-            player.rect.x +=10;
-        }
-        
         update();
         pe_clearScreen(0, 0, 0, 255);
         
 
         pe_startRender();
-        //SDL_Rect rect = {400, 300, 100, 100};
-        //pe_drawRect(&rect, 255, 255, 255, 255);
 
-        pe_drawRect(&player.rect, 255, 255, 255, 255);
-        pe_drawCircle(400, 300, 100);
         //render stuff here
         pe_endRender();
     }

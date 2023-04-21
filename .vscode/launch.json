@@ -1,6 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "(gdb)",
             "type": "cppdbg",
@@ -12,7 +13,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "C:\\minGW\\mingw64\\bin\\gdb.exe",
+            "miDebuggerPath": "gdb",
             "setupCommands": [
                 {
                     "description": "Enably pretty printing",

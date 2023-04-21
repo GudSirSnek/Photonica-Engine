@@ -3,6 +3,8 @@
         "engine.h": "c",
         "stdio.h": "c",
         "math.h": "c",
-        "sdl_image.h": "c"
-    }
+        "sdl_image.h": "c",
+        "sdl.h": "c"
+    },
+    "cmake.configureOnOpen": true
 }

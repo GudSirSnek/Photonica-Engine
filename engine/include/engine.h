@@ -1,6 +1,7 @@
 #pragma once
-
 #include <SDL2/SDL.h>
+#include <glad/glad.h>
+
 #include "util.h"
 #include "maths.h"
 
