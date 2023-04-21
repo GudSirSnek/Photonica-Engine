@@ -63,7 +63,6 @@ void pe_init(void){
 
     int w,h;
     SDL_GetWindowSize(window, &w, &h);
-    printf("%d, %d\n", w, h);
     glViewport(0, 0, w, h);
     glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -155,6 +154,7 @@ void pe_drawCircle(int centerX, int centerY, int radius){
 	  }
     }
     */
+   
 }
 
 void pe_drawRect(SDL_Rect* rect, int r, int g, int b, int a){
