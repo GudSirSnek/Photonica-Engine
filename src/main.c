@@ -63,8 +63,8 @@ int main(int argc, char* args[]) {
     //game_is_running = initialize_window();
     game_is_running = 1;
     pe_init();
-    //pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
-    //pe_createRenderer();
+    pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
+    pe_createRenderer();
     setup();
     SDL_Event event;
     
@@ -81,7 +81,6 @@ int main(int argc, char* args[]) {
         
 
         pe_startRender();
-
         //render stuff here
         pe_endRender();
     }

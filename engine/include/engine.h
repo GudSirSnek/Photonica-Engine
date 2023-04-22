@@ -19,7 +19,7 @@ void pe_startRender(void);
 
 void pe_endRender(void);
 
-void pe_drawCircle(int centerX, int centerY, int radius);
+void pe_drawCircle(float cx, float cy, float r, int num_segments);
 
 void pe_drawRect(SDL_Rect* rect, int r, int g, int b, int a);
 
