@@ -37,19 +37,19 @@ void pe_init(void){
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    
+    pe_printInfo("successfully initialized SDL2", NULL);
 
     
 }
 
 void pe_uninit(void){
-    pe_printNeutral("uninitalizing renderer, window, SDL", NULL);
+    pe_printInfo("uninitalizing renderer, window, SDL", NULL);
     //SDL_DestroyRenderer(renderer);
-    pe_printNeutral("renderer uninitialized",NULL);
+    pe_printInfo("renderer uninitialized",NULL);
     SDL_DestroyWindow(window);
-    pe_printNeutral("window uninitialized",NULL);
+    pe_printInfo("window uninitialized",NULL);
     SDL_Quit();
-    pe_printNeutral("SDL uninitialized",NULL);
+    pe_printInfo("SDL2 uninitialized",NULL);
 
     pe_printInfo("Photonica Engine successfully uninitialized",NULL);
 }
@@ -60,6 +60,8 @@ void pe_createWindow(const char *title, int width, int height){
     if (!window){
         pe_printFatalError("ERROR INITIALIZING WINDOW.", SDL_GetError());
     }
+
+    pe_printInfo("successfully created Window", NULL);
 }
 
 
@@ -73,11 +75,11 @@ void pe_createRenderer(void){
     }
 
     // Check OpenGL properties
-    printf("OpenGL loaded\n");
+    pe_printInfo("successfully loaded OpenGL", NULL);
     gladLoadGLLoader(SDL_GL_GetProcAddress);
-    printf("Vendor:   %s\n", glGetString(GL_VENDOR));
-    printf("Renderer: %s\n", glGetString(GL_RENDERER));
-    printf("Version:  %s\n", glGetString(GL_VERSION));
+    pe_printNeutral("Vendor:   %s", glGetString(GL_VENDOR));
+    pe_printNeutral("Renderer: %s", glGetString(GL_RENDERER));
+    pe_printNeutral("Version:  %s", glGetString(GL_VERSION));
 
     // Use v-sync
     SDL_GL_SetSwapInterval(1);
@@ -101,6 +103,8 @@ void pe_clearScreen(int r, int g, int b, int a){
 
 void pe_startRender(void){
     //SDL_RenderClear(renderer);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void pe_endRender(void){
@@ -116,8 +120,16 @@ void pe_drawCircle(float cx, float cy, float r, int num_segments)
 void pe_drawRect(SDL_Rect* rect, int r, int g, int b, int a){
     /*SDL_SetRenderDrawColor(renderer, r, g ,b, a);
     SDL_RenderDrawRect(renderer, rect);*/
-    
-
+    float vertices[] = {
+     0.5f,  0.5f, 0.0f,  // top right
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f   // top left 
+    };
+    unsigned int indices[] = {  // note that we start from 0!
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };  
 }
 
 void pe_getInput(void){
