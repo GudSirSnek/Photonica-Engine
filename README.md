@@ -23,6 +23,8 @@ The development needed to get a core game development framework going
 - core rendering system
   - shader loading and rendering
   
+  - state manager
+  
   - texture loading and rendering
 
 - core user input system
