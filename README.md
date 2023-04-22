@@ -9,8 +9,9 @@ Dependencies:
 
 **-GLAD:** OpenGL accelerated graphics and shaders
 
+These dependencies are included in the repository, the only additional software needed for development is the GCC compiler and GDB debugger, which can be installed using MSYS2 following: https://code.visualstudio.com/docs/languages/cpp
 
-
+GCC and GDB **MUST** be included in the PATH system variable or else compilation will not work.
 
 ## Development Roadmap:
 
