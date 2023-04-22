@@ -14,7 +14,10 @@ Dependencies:
 
 ## Development Roadmap:
 
+This section goes over the main systems for development, add resources and ideas if you want.
+
 ### implementation of core systems
+The development needed to get any base game going
 
 - core rendering system
   - shader loading and rendering
@@ -34,4 +37,15 @@ Dependencies:
 - UI system
 
 - physics system
+
+### Further systems
+These systems are additions that areasfasdfasfasasdfaASDFASD
+
+- world chunk system
+
+- weapons system
+
+- world generation
+
+- additional video fx
 
