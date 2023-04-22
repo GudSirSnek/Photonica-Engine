@@ -17,7 +17,7 @@ Dependencies:
 This section goes over the main systems for development, add resources and ideas if you want.
 
 ### implementation of core systems
-The development needed to get any base game going
+The development needed to get a core game development framework going
 
 - core rendering system
   - shader loading and rendering
@@ -39,7 +39,7 @@ The development needed to get any base game going
 - physics system
 
 ### Further systems
-These systems are additions that areasfasdfasfasasdfaASDFASD
+These systems are additions that are specific for Hell's Dungeon 
 
 - world chunk system
 
