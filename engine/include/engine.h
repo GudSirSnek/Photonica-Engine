@@ -13,7 +13,7 @@ typedef struct{
 } primitive;
 
 //primitive pe_rect = {0,0,0,12,6}; //want to have this as like a global variable that any draw call can access
-//somehow triggers a "multiple def error"
+//somehow triggers a "multiple def error" despite being in the engine.h header file which is protected by #praga once
 
 
 void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo);
