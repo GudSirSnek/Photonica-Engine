@@ -6,7 +6,17 @@
 #include "maths.h"
 #include "shader.h"
 
+typedef struct{
+        unsigned int VBO,VAO, EBO;
+        int vertices;
+        int indices;
+} primitive;
 
+//primitive pe_rect = {0,0,0,12,6}; //want to have this as like a global variable that any draw call can access
+//somehow triggers a "multiple def error"
+
+
+void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo);
 
 void pe_init(void);
 

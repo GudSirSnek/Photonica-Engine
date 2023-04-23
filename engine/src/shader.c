@@ -22,7 +22,7 @@ char* get_shader_content(const char* fileName)
     }
     fseek(fp, 0L, SEEK_END);
     size = ftell(fp)+1;
-    fclose(fp);
+    fseek(fp, 0L, SEEK_SET);
 
     /* Read File for Content */
     fp = fopen(fileName, "r");
@@ -72,6 +72,9 @@ GLuint pe_CreateShaderProg(const char* vertexShaderPath, const char* fragmentSha
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    free((char*)vertexShaderSource);
+    free((char*)fragmentShaderSource);
 
     return shaderProgram;
 }

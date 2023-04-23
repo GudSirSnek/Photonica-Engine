@@ -5,6 +5,45 @@ static SDL_Window *window = NULL;
 static SDL_GLContext maincontext;
 uint32_t w_flags = 0;
 
+
+
+void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
+    //	 x,	y, z, u, v
+	float vertices[] = {
+		 0.5,  0.5, 0, 0, 0,
+		 0.5, -0.5, 0, 0, 1,
+		-0.5, -0.5, 0, 1, 1,
+		-0.5,  0.5, 0, 1, 0
+	};
+
+	unsigned int indices[] = {
+		0, 1, 3,
+		1, 2, 3
+	};
+
+	glGenVertexArrays(1, vao);
+	glGenBuffers(1, vbo);
+	glGenBuffers(1, ebo);
+
+	glBindVertexArray(*vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// xyz
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), NULL);
+	glEnableVertexAttribArray(0);
+
+	// uv
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+}
+
 void pe_init(void){
     /*
     if (SDL_Init(SDL_INIT_VIDEO) != 0){
@@ -93,6 +132,9 @@ void pe_createRenderer(void){
     glViewport(0, 0, w, h);
     glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+
+    //pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
 }
 
 void pe_clearScreen(int r, int g, int b, int a){
