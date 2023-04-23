@@ -6,15 +6,11 @@
 #include "maths.h"
 #include "shader.h"
 
-typedef struct{
-        unsigned int VBO,VAO, EBO;
-        int vertices;
-        int indices;
+typedef struct primitive {
+  unsigned int VBO, VAO, EBO;
+  int vertices;
+  int indices;
 } primitive;
-
-//primitive pe_rect = {0,0,0,12,6}; //want to have this as like a global variable that any draw call can access
-//somehow triggers a "multiple def error" despite being in the engine.h header file which is protected by #praga once
-
 
 void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo);
 
@@ -32,7 +28,7 @@ void pe_endRender(void);
 
 void pe_drawCircle(float cx, float cy, float r, int num_segments);
 
-void pe_drawRect(SDL_Rect* rect, int r, int g, int b, int a);
+void pe_drawRect(pe_vec2 position, pe_vec2 size, pe_vec4 color);
 
 void pe_getInput(void);
 

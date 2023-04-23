@@ -176,6 +176,10 @@ int main(int argc, char* args[]) {
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
     glBindVertexArray(0); 
 
+    pe_vec2 position = {0,0};
+    pe_vec2 size = {0.5, 0.5};
+    pe_vec4 color = {1,1,0,1};
+
     while (game_is_running) {
        
         SDL_PollEvent(&event);
@@ -189,16 +193,9 @@ int main(int argc, char* args[]) {
         
 
         pe_startRender();
+        pe_drawRect(position, size, color);
         //render stuff here
-
-
-        // draw our first triangle
-        //glUseProgram(shaderProgram);
-        pe_UseShaderProgram(Program);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        // glBindVertexArray(0); // no need to unbind it every time 
+       
         pe_endRender();
     }
 

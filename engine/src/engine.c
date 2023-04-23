@@ -4,16 +4,20 @@
 static SDL_Window *window = NULL;
 static SDL_GLContext maincontext;
 uint32_t w_flags = 0;
+GLuint shader_default;
 
 
+
+
+primitive pe_rect = {0,0,0,12,6};
 
 void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
     //	 x,	y, z, u, v
 	float vertices[] = {
-		 0.5,  0.5, 0, 0, 0,
-		 0.5, -0.5, 0, 0, 1,
-		-0.5, -0.5, 0, 1, 1,
-		-0.5,  0.5, 0, 1, 0
+		 0.5,  0.5, 0,
+		 0.5, -0.5, 0,
+		-0.5, -0.5, 0,
+		-0.5,  0.5, 0,
 	};
 
 	unsigned int indices[] = {
@@ -34,12 +38,9 @@ void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// xyz
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), NULL);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-	// uv
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
 	glBindVertexArray(0);
 }
@@ -134,7 +135,8 @@ void pe_createRenderer(void){
     glClear(GL_COLOR_BUFFER_BIT);
 
 
-    //pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
+    pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
+    shader_default = pe_CreateShaderProg("./res/shaders/Vshader.s", "./res/shaders/Fshader.s");
 }
 
 void pe_clearScreen(int r, int g, int b, int a){
@@ -159,19 +161,20 @@ void pe_drawCircle(float cx, float cy, float r, int num_segments)
 
 }
 
-void pe_drawRect(SDL_Rect* rect, int r, int g, int b, int a){
+void pe_drawRect(pe_vec2 position, pe_vec2 size, pe_vec4 color){
     /*SDL_SetRenderDrawColor(renderer, r, g ,b, a);
     SDL_RenderDrawRect(renderer, rect);*/
-    float vertices[] = {
-     0.5f,  0.5f, 0.0f,  // top right
-     0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left 
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };  
+    pe_UseShaderProgram(shader_default);
+    M4x4 model;
+    M4x4_identity(model);
+    M4x4_translate(model, position[0], position[1], 0);
+    //scale matrix
+    M4x4_scale_aniso(model, model, size[0], size[1], 1);
+
+    glUniformMatrix4fv(glGetUniformLocation(shader_default, "model"), 1, GL_FALSE, &model[0][0]);
+	glUniform4fv(glad_glGetUniformLocation(shader_default, "color"), 1, color);
+    glBindVertexArray(pe_rect.VAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
 void pe_getInput(void){
