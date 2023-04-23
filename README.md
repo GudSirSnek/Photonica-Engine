@@ -21,7 +21,10 @@ This section goes over the main systems for development, add resources and ideas
 The development needed to get a core game development framework going
 
 - core rendering system
-  - shader loading and rendering
+  - shader loading and rendering- finished
+  
+  - primitive rendering
+    -rectangles done
   
   - state manager
   
