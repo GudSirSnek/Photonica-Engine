@@ -1,40 +1,14 @@
 
 
 /* Loads the content of a GLSL Shader file into a char* variable */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <shader.h>
-#include <util.h>
+#include "shader.h"
+#include "util.h"
+#include "IO.h"
 
-
-char* get_shader_content(const char* fileName)
-{
-    FILE *fp;
-    long size = 0;
-    char* shaderContent;
-    
-    /* Read File to get size */
-    fp = fopen(fileName, "rb");
-    if(fp == NULL) {
-        printf("failed to load file: %s\n", fileName);
-        return "";
-    }
-    fseek(fp, 0L, SEEK_END);
-    size = ftell(fp)+1;
-    fseek(fp, 0L, SEEK_SET);
-
-    /* Read File for Content */
-    fp = fopen(fileName, "r");
-    shaderContent = memset(malloc(size), '\0', size);
-    fread(shaderContent, 1, size-1, fp);
-    fclose(fp);
-    return shaderContent;
-}
 
 GLuint pe_CreateShaderProg(const char* vertexShaderPath, const char* fragmentShaderPath){
-    const char *vertexShaderSource = get_shader_content(vertexShaderPath);
-    const char *fragmentShaderSource = get_shader_content(fragmentShaderPath);
+    const char *vertexShaderSource = io_read_file(vertexShaderPath);
+    const char *fragmentShaderSource = io_read_file(fragmentShaderPath);
 
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -73,8 +47,8 @@ GLuint pe_CreateShaderProg(const char* vertexShaderPath, const char* fragmentSha
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    free((char*)vertexShaderSource);
-    free((char*)fragmentShaderSource);
+    pe_free_mem((char*)vertexShaderSource);
+    pe_free_mem((char*)fragmentShaderSource);
 
     return shaderProgram;
 }

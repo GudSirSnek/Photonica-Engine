@@ -55,7 +55,9 @@
         "streambuf": "c",
         "cinttypes": "c",
         "typeinfo": "c",
-        "shader.h": "c"
+        "shader.h": "c",
+        "util.h": "c",
+        "glad.h": "c"
     },
     "cmake.configureOnOpen": true
 }

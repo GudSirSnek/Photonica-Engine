@@ -1,7 +1,7 @@
 #pragma once
-#include <SDL2/SDL.h>
 #include <glad/glad.h>
-
+#include "SDL2/SDL.h"
+#include <stdio.h>
 #include "util.h"
 #include "maths.h"
 #include "shader.h"
@@ -11,6 +11,13 @@ typedef struct primitive {
   int vertices;
   int indices;
 } primitive;
+
+typedef struct screen {
+  int width, height;
+  M4x4 projection;
+} ScreenSpace;
+
+
 
 void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo);
 

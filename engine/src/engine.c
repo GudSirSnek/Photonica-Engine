@@ -1,15 +1,15 @@
-#include <engine.h>
-#include <stdio.h>
-#include <math.h>
+#include "engine.h"
+
 static SDL_Window *window = NULL;
 static SDL_GLContext maincontext;
 uint32_t w_flags = 0;
 GLuint shader_default;
 
-
-
+M4x4 r_proj;
 
 primitive pe_rect = {0,0,0,12,6};
+
+ScreenSpace screen = {0, 0, 0};
 
 void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
     //	 x,	y, z, u, v
@@ -100,6 +100,8 @@ void pe_createWindow(const char *title, int width, int height){
     if (!window){
         pe_printFatalError("ERROR INITIALIZING WINDOW.", SDL_GetError());
     }
+    screen.width = width;
+    screen.height = height;
 
     pe_printInfo("successfully created Window", NULL);
 }
@@ -136,7 +138,15 @@ void pe_createRenderer(void){
 
 
     pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
+    M4x4_ortho(screen.projection, 0, 800, 0, 600, -2 ,2);  
     shader_default = pe_CreateShaderProg("./res/shaders/Vshader.s", "./res/shaders/Fshader.s");
+    glUseProgram(shader_default);
+    GLint proj_loc = glGetUniformLocation(shader_default, "projection");
+
+    if (proj_loc == -1){
+        pe_printFatalError("ERROR, uniform not found", SDL_GetError());
+    }
+    glUniformMatrix4fv(proj_loc, 1, GL_FALSE, *screen.projection);
 }
 
 void pe_clearScreen(int r, int g, int b, int a){
@@ -164,6 +174,8 @@ void pe_drawCircle(float cx, float cy, float r, int num_segments)
 void pe_drawRect(pe_vec2 position, pe_vec2 size, pe_vec4 color){
     /*SDL_SetRenderDrawColor(renderer, r, g ,b, a);
     SDL_RenderDrawRect(renderer, rect);*/
+
+    pe_vec4 GLcolor = {color[0]/255, color[1]/255, color[2]/255, color[3]/255};
     pe_UseShaderProgram(shader_default);
     M4x4 model;
     M4x4_identity(model);
@@ -171,8 +183,10 @@ void pe_drawRect(pe_vec2 position, pe_vec2 size, pe_vec4 color){
     //scale matrix
     M4x4_scale_aniso(model, model, size[0], size[1], 1);
 
+    
+    
     glUniformMatrix4fv(glGetUniformLocation(shader_default, "model"), 1, GL_FALSE, &model[0][0]);
-	glUniform4fv(glad_glGetUniformLocation(shader_default, "color"), 1, color);
+	glUniform4fv(glad_glGetUniformLocation(shader_default, "color"), 1, GLcolor);
     glBindVertexArray(pe_rect.VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
