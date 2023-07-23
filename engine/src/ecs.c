@@ -47,6 +47,8 @@ void pe_ecs_init(uint32_t component_count, ...){
 	}
 	va_end(ap);
 
+	ecs_state.entity_pool = pe_stack_create(sizeof(uint32_t));
+
     ecs_state.component_store.type_count = component_count;
     ecs_state.component_store.cap = INITIAL_CAPACITY;
     ecs_state.component_store.data = malloc(INITIAL_CAPACITY * size);
@@ -56,10 +58,13 @@ void pe_ecs_init(uint32_t component_count, ...){
     memcpy(ecs_state.component_store.data_size_array, sizes, component_count * sizeof(size_t));
 	memcpy(ecs_state.component_store.data_offset_array, offsets, component_count * sizeof(size_t));
 
+	ecs_state.query_result.list = malloc(INITIAL_CAPACITY * sizeof(uint32_t));
+
 	ecs_state.entity_store.count = 0;
 	ecs_state.entity_store.cap = INITIAL_CAPACITY;
 	ecs_state.entity_store.mask_array = malloc(INITIAL_CAPACITY * sizeof(uint32_t));
 	ecs_state.entity_store.flag_array = malloc(INITIAL_CAPACITY * sizeof(uint32_t));
+
 }
 
 Entity pe_ecs_create(){
@@ -143,8 +148,8 @@ QueryResult *pe_ecs_query(uint32_t component_count, ...){
 		mask |= (1 << va_arg(ap, uint32_t));
 	}
 	va_end(ap);
-
-	for (i = 0; i < ecs_state.entity_store.count; ++i) {
+	
+	for (uint32_t i = 0; i < ecs_state.entity_store.count; ++i) {
 		if (0 != (ecs_state.entity_store.flag_array[i] & ENT_FLAG_ALIVE) && mask == (ecs_state.entity_store.mask_array[i] & mask)) {
 			ecs_state.query_result.list[ecs_state.query_result.count++] = i;
 		}

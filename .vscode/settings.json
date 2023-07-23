@@ -57,7 +57,8 @@
         "typeinfo": "c",
         "shader.h": "c",
         "util.h": "c",
-        "glad.h": "c"
+        "glad.h": "c",
+        "maths.h": "c"
     },
     "cmake.configureOnOpen": true
 }
