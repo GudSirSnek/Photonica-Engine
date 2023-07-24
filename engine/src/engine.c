@@ -3,9 +3,7 @@
 static SDL_Window *window = NULL;
 static SDL_GLContext maincontext;
 uint32_t w_flags = 0;
-
-GLuint shader_default; 
-extern GLuint texture_default;
+GLuint shader_default;
 
 M4x4 r_proj;
 
@@ -108,16 +106,6 @@ void pe_createWindow(const char *title, int width, int height){
     pe_printInfo("successfully created Window", NULL);
 }
 
-void init_render_color_texture(GLuint *texture){
-    glGenTextures(1, texture);
-	glBindTexture(GL_TEXTURE_2D, *texture);
-
-	uint8_t solid_white[4] = {255, 255, 255, 255};
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, solid_white);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
 
 void pe_createRenderer(void){
 
@@ -151,8 +139,6 @@ void pe_createRenderer(void){
 
     pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
     M4x4_ortho(screen.projection, 0, 800, 0, 600, -2 ,2);  
-
-
     shader_default = pe_CreateShaderProg("./res/shaders/Vshader.s", "./res/shaders/Fshader.s");
     glUseProgram(shader_default);
     GLint proj_loc = glGetUniformLocation(shader_default, "projection");

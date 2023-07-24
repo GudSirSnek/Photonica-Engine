@@ -6,7 +6,6 @@
 #include "maths.h"
 #include "shader.h"
 
-
 typedef struct primitive {
   unsigned int VBO, VAO, EBO;
   int vertices;
@@ -25,8 +24,6 @@ void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo);
 void pe_init(void);
 
 void pe_createWindow(const char *name, int width, int height);
-
-void init_render_color_texture(GLuint *texture);
 
 void pe_createRenderer(void);
 
