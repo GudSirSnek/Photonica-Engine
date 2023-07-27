@@ -82,6 +82,7 @@ void system_draw(){
 		PositionComponent *pos = (PositionComponent*)pe_ecs_get(qr->list[i], 0);
 		ShaderSolidComponent *spr = (ShaderSolidComponent*)pe_ecs_get(qr->list[i], 1);
 
+        printf("%d, %d\n", pos->position[0], pos->size[0]);
 		pe_drawRect(pos->position, pos->size, spr->color);
 	}
 }
