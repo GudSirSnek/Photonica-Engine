@@ -50,14 +50,14 @@ void pe_ecs_init(uint32_t component_count, ...){
 	ecs_state.entity_pool = pe_stack_create(sizeof(uint32_t));
     ecs_state.component_store.type_count = component_count;
     ecs_state.component_store.cap = INITIAL_CAPACITY;
-    ecs_state.component_store.data = calloc(INITIAL_CAPACITY, size);
+    ecs_state.component_store.data = malloc(INITIAL_CAPACITY * size);
     ecs_state.component_store.data_size_array = malloc(component_count*sizeof(size_t));
     ecs_state.component_store.data_offset_array = malloc(component_count*sizeof(size_t));
     ecs_state.component_store.size = size;
     memcpy(ecs_state.component_store.data_size_array, sizes, component_count * sizeof(size_t));
 	memcpy(ecs_state.component_store.data_offset_array, offsets, component_count * sizeof(size_t));
 
-	ecs_state.query_result.list = calloc(INITIAL_CAPACITY, sizeof(uint32_t));
+	ecs_state.query_result.list = malloc(INITIAL_CAPACITY * sizeof(uint32_t));
 	ecs_state.entity_store.count = 0;
 	ecs_state.entity_store.cap = INITIAL_CAPACITY;
 	ecs_state.entity_store.mask_array = malloc(INITIAL_CAPACITY * sizeof(uint32_t));
@@ -69,17 +69,14 @@ void pe_ecs_init(uint32_t component_count, ...){
 Entity pe_ecs_create(){
     Entity entity;
     uint32_t id;
-	printf("entity here 1.");
     if (ecs_state.entity_pool->count > 0)
         {
         id = *(uint32_t*)pe_stack_pop(ecs_state.entity_pool);
-		printf("entity here 2.");
         }
     else
         {
         id = ecs_state.entity_store.count++;
         if (ecs_state.entity_store.cap == id){
-			printf("entity here 3.");
             uint32_t *new_flag_array = realloc(ecs_state.entity_store.flag_array, ecs_state.entity_store.cap * 2 * sizeof(uint32_t));
             uint32_t *new_mask_array = realloc(ecs_state.entity_store.mask_array, ecs_state.entity_store.cap * 2 * sizeof(uint32_t));
 			void *new_data = realloc(ecs_state.component_store.data, ecs_state.component_store.cap * 2 * ecs_state.component_store.size);
@@ -89,7 +86,6 @@ Entity pe_ecs_create(){
 				exit(1);
 			} 
             else {
-				printf("entity here 4.");
 				ecs_state.entity_store.flag_array = new_flag_array;
 				ecs_state.entity_store.mask_array = new_mask_array;
 				ecs_state.query_result.list = new_query_result_list;
@@ -157,11 +153,5 @@ QueryResult *pe_ecs_query(uint32_t component_count, ...){
 			ecs_state.query_result.list[ecs_state.query_result.count++] = i;
 		}
 	}
-
-	int loop;
-
-	for(loop = 0; loop < 10; loop++)
-		printf("%d ", ecs_state.query_result.list[loop]);
-		
 	return &ecs_state.query_result;
 }
