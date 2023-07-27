@@ -1,5 +1,4 @@
 #include <engine.h>
-#include "ecs.h"
 #include <stdio.h>
 
 #define WINDOW_WIDTH 800
@@ -12,6 +11,11 @@
 #define FRAME_TARGET_TIME (1000 / FPS)
 
 
+typedef struct{
+    int x, y;//position
+    SDL_Rect rect;//hitbox
+    //img texture
+}Entity;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,35 +61,6 @@ float SpaceToScreenSpace(int x, int y){
     return 0;
 }
 
-/*
-position component
-
-shader component(for now just solid colour shader)
-
-*/
-
-
-typedef struct{
-    pe_vec2 position;
-    pe_vec2 size;
-}PositionComponent;
-
-typedef struct{
-    pe_vec4 color;
-}ShaderSolidComponent;
-
-void system_draw(){
-    
-    uint32_t i;
-	QueryResult *qr = pe_ecs_query(2, 0, 1);
-	for (i = 0; i < qr->count; ++i) {
-		PositionComponent *pos = (PositionComponent*)pe_ecs_get(qr->list[i], 0);
-		ShaderSolidComponent *spr = (ShaderSolidComponent*)pe_ecs_get(qr->list[i], 1);
-
-		pe_drawRect(pos->position, pos->size, spr->color);
-	}
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Main function
@@ -99,23 +74,14 @@ int main(int argc, char* args[]) {
     setup();
     SDL_Event event;
     
-    pe_ecs_init(2, sizeof(PositionComponent), sizeof(ShaderSolidComponent));
-    Entity player = pe_ecs_create();
-    PositionComponent pos = {0};
-    ShaderSolidComponent shad = {0};
-    pos.position[0] = 400;
-    pos.position[1] = 300;
-    pos.size[0] = 50;
-    pos.size[1] = 50;
-
-    pe_ecs_add(player.id, 0, &pos);
+    Entity player;
+    player.x = 400;
+    player.y = 300;
+    SDL_Rect temp = {400, 300, 100, 100};
+    player.rect = temp;
+    pe_vec2 position = {400, 300};
+    pe_vec2 size = {50, 50};
     pe_vec4 color = {255,255,0,255};
-    shad.color[0] = color[0];
-    shad.color[1] = color[1];
-    shad.color[2] = color[2];
-    shad.color[3] = color[3];
-
-    pe_ecs_add(player.id, 1, &shad);
 
     while (game_is_running) {
        
@@ -130,7 +96,7 @@ int main(int argc, char* args[]) {
         
 
         pe_startRender();
-        system_draw();
+        pe_drawRect(position, size, color);
         //render stuff here
        
         pe_endRender();

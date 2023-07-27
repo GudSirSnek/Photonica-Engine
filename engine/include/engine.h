@@ -27,7 +27,6 @@ void pe_createWindow(const char *name, int width, int height);
 
 void pe_createRenderer(void);
 
-
 void pe_clearScreen(int r, int g, int b, int a);
 
 void pe_startRender(void);
