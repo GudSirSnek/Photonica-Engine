@@ -139,7 +139,7 @@ void pe_createRenderer(void){
 
     pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
     M4x4_ortho(screen.projection, 0, 800, 0, 600, -2 ,2);  
-    shader_default = pe_CreateShaderProg("./res/shaders/Vshader.s", "./res/shaders/Fshader.s");
+    shader_default = pe_CreateShaderProg("../res/shaders/Vshader.s", "../res/shaders/Fshader.s");
     glUseProgram(shader_default);
     GLint proj_loc = glGetUniformLocation(shader_default, "projection");
 
