@@ -67,24 +67,22 @@ void system_draw()
     
 
     //pe_drawRect(pos->position, pos->size, col->color);
-    pe_drawRect(space1.position, space1.size, color1.color);
+    //pe_drawRect(space1.position, space1.size, color1.color);
 
     
-    /*
+    
     uint8_t flag;
     for(uint32_t i = 0; i < 32; ++i){
         flag = pe_ecs_getFlag(i);
+        //printf("Flag:%d\n", flag);
 
         if (flag){
-            
             SpaceComponent * pos = pe_ecs_GetSpaceComp(i);
             ColorComponent * col = pe_ecs_GetColorComp(i);
-            //printf("%f, %f, %f,%f\n", pos.position[0], pos.position[1], pos.size[0], pos.size[1]);
             pe_drawRect(pos->position, pos->size, col->color);
         }
         
     }
-    */
 }
 
 void update_systems(){
