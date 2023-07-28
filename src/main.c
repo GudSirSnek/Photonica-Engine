@@ -1,5 +1,6 @@
 #include <engine.h>
 #include <stdio.h>
+#include "ecs.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -11,11 +12,6 @@
 #define FRAME_TARGET_TIME (1000 / FPS)
 
 
-typedef struct{
-    int x, y;//position
-    SDL_Rect rect;//hitbox
-    //img texture
-}Entity;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,7 +22,8 @@ int last_frame_time = 0;
 ///////////////////////////////////////////////////////////////////////////////
 // Function to poll SDL events and process keyboard input
 ///////////////////////////////////////////////////////////////////////////////
-
+SpaceComponent space1 = {{400.0, 300.0}, {50.0, 50.0}};
+ColorComponent color1 = {{255, 0, 255, 255}};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup function that runs once at the beginning of our program
@@ -62,6 +59,40 @@ float SpaceToScreenSpace(int x, int y){
 }
 
 
+void system_draw()
+{
+    
+    //SpaceComponent * pos = pe_ecs_GetSpaceComp(1);
+    //ColorComponent * col = pe_ecs_GetColorComp(1);
+    
+
+    //pe_drawRect(pos->position, pos->size, col->color);
+    pe_drawRect(space1.position, space1.size, color1.color);
+
+    
+    /*
+    uint8_t flag;
+    for(uint32_t i = 0; i < 32; ++i){
+        flag = pe_ecs_getFlag(i);
+
+        if (flag){
+            
+            SpaceComponent * pos = pe_ecs_GetSpaceComp(i);
+            ColorComponent * col = pe_ecs_GetColorComp(i);
+            //printf("%f, %f, %f,%f\n", pos.position[0], pos.position[1], pos.size[0], pos.size[1]);
+            pe_drawRect(pos->position, pos->size, col->color);
+        }
+        
+    }
+    */
+}
+
+void update_systems(){
+    pe_drawRect(space1.position, space1.size, color1.color);
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Main function
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,18 +102,22 @@ int main(int argc, char* args[]) {
     pe_init();
     pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
     pe_createRenderer();
+
+    pe_ecs_init(2, 2);
     setup();
     SDL_Event event;
-    
-    Entity player;
-    player.x = 400;
-    player.y = 300;
-    SDL_Rect temp = {400, 300, 100, 100};
-    player.rect = temp;
-    pe_vec2 position = {400, 300};
-    pe_vec2 size = {50, 50};
-    pe_vec4 color = {255,255,0,255};
+    Entity player = pe_ecs_create();
 
+    SpaceComponent space = {{400.0, 300.0}, {50.0, 50.0}};
+    ColorComponent color = {{255, 0, 255, 255}};
+
+
+    printf("player id:%d\n", player.id);
+    pe_ecs_AddSpaceComp(player.id, &space);
+    pe_ecs_AddColorComp(player.id, &color);
+
+    
+   
     while (game_is_running) {
        
         SDL_PollEvent(&event);
@@ -94,9 +129,13 @@ int main(int argc, char* args[]) {
         update();
         pe_clearScreen(0, 0, 0, 255);
         
-
+        
         pe_startRender();
-        pe_drawRect(position, size, color);
+        
+        //update_systems();
+        //pe_drawRect(space1.position, space1.size, color1.color);
+
+        system_draw();
         //render stuff here
        
         pe_endRender();

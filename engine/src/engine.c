@@ -9,7 +9,7 @@ M4x4 r_proj;
 
 primitive pe_rect = {0,0,0,12,6};
 
-ScreenSpace screen = {0, 0, 0};
+ScreenSpace screen = {0};
 
 void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
     //	 x,	y, z, u, v
@@ -136,11 +136,11 @@ void pe_createRenderer(void){
     glClearColor(0.0f, 0.5f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-
-    pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
-    M4x4_ortho(screen.projection, 0, 800, 0, 600, -2 ,2);  
     shader_default = pe_CreateShaderProg("../res/shaders/Vshader.s", "../res/shaders/Fshader.s");
     glUseProgram(shader_default);
+    pe_init_rect(&pe_rect.VAO, &pe_rect.VBO, &pe_rect.EBO);
+    M4x4_ortho(screen.projection, 0, 800, 600, 0, -1 ,1);  
+    
     GLint proj_loc = glGetUniformLocation(shader_default, "projection");
 
     if (proj_loc == -1){
@@ -171,11 +171,12 @@ void pe_drawCircle(float cx, float cy, float r, int num_segments)
 
 }
 
-void pe_drawRect(pe_vec2 position, pe_vec2 size, pe_vec4 color){
+void pe_drawRect(pe_vec2  position, pe_vec2 size, pe_vec4 color){
     /*SDL_SetRenderDrawColor(renderer, r, g ,b, a);
     SDL_RenderDrawRect(renderer, rect);*/
-
+    printf("%f, %f, %f,%f\n", position[0], position[1], size[0], size[1]); 
     pe_vec4 GLcolor = {color[0]/255, color[1]/255, color[2]/255, color[3]/255};
+
     pe_UseShaderProgram(shader_default);
     M4x4 model;
     M4x4_identity(model);
@@ -183,10 +184,10 @@ void pe_drawRect(pe_vec2 position, pe_vec2 size, pe_vec4 color){
     //scale matrix
     M4x4_scale_aniso(model, model, size[0], size[1], 1);
 
-    
+            
     
     glUniformMatrix4fv(glGetUniformLocation(shader_default, "model"), 1, GL_FALSE, &model[0][0]);
-	glUniform4fv(glad_glGetUniformLocation(shader_default, "color"), 1, GLcolor);
+	glUniform4fv(glGetUniformLocation(shader_default, "color"), 1, GLcolor);
     glBindVertexArray(pe_rect.VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
