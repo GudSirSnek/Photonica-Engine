@@ -28,6 +28,7 @@ void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
 	glGenVertexArrays(1, vao);
 	glGenBuffers(1, vbo);
 	glGenBuffers(1, ebo);
+    printf("error: %d\n", glGetError());
 
 	glBindVertexArray(*vao);
 
@@ -43,6 +44,7 @@ void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
 	glBindVertexArray(0);
+    printf("error: %d\n", glGetError());
 }
 
 void pe_init(void){
@@ -83,6 +85,7 @@ void pe_init(void){
 }
 
 void pe_uninit(void){
+
     pe_printInfo("uninitalizing renderer, window, SDL", NULL);
     //SDL_DestroyRenderer(renderer);
     pe_printInfo("renderer uninitialized",NULL);
@@ -163,6 +166,7 @@ void pe_startRender(void){
 
 void pe_endRender(void){
     //SDL_RenderPresent(renderer);
+    glFinish();
     SDL_GL_SwapWindow(window);
 }
 
@@ -179,12 +183,11 @@ void pe_drawRect(pe_vec2  position, pe_vec2 size, pe_vec4 color){
 
     pe_UseShaderProgram(shader_default);
     M4x4 model;
+    
     M4x4_identity(model);
     M4x4_translate(model, position[0], position[1], 0);
     //scale matrix
     M4x4_scale_aniso(model, model, size[0], size[1], 1);
-
-            
     
     glUniformMatrix4fv(glGetUniformLocation(shader_default, "model"), 1, GL_FALSE, &model[0][0]);
 	glUniform4fv(glGetUniformLocation(shader_default, "color"), 1, GLcolor);

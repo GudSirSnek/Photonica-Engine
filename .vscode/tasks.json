@@ -8,6 +8,7 @@
             "args": [
                 "-g",
                 "-Wall",
+                "-Wextra",
                 "src/*.c",
                 "engine/src/*.c",
                 "-o",

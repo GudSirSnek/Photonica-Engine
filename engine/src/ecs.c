@@ -92,7 +92,7 @@ void pe_ecs_getQuery(){
 	ecs_state.query_results[0].count = 0;
 	ecs_state.query_results[1].count = 0;
 
-	for(int i = 0; i < ecs_state.entity_store.cap; i++){
+	for(uint32_t i = 0; i < ecs_state.entity_store.cap; i++){
 		if (ecs_state.entity_store.mask_array[i] == 0b00){
 			ecs_state.query_results[0].list[ecs_state.query_results[0].count++] = i;
 		}

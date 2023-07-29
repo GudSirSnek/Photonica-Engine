@@ -1,5 +1,7 @@
 #include "maths.h"
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 int pe_dist2D(int x1, int y1, int x2, int y2){
     int square_difference_x = (x2-x1)*(x2-x1);
     int square_difference_y = (y2-y1)*(y2-y1);
@@ -22,6 +24,7 @@ void vec4_dup(pe_vec4 r, pe_vec4 const src){
 
 void M4x4_identity(M4x4 mat){
     
+    memset(mat, 0, 64);
 
     for (int i = 0; i<4; i++){
         mat[i][i] = 1;
