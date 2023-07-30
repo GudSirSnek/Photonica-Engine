@@ -31,8 +31,11 @@ typedef struct{//holds color data for the basic rendering
 
 typedef struct {
 
+    size_t *sizes;
     SpaceComponent *space_components;
     ColorComponent *color_components;
+
+    void **Components;
 
 } ComponentStore;
 
@@ -63,9 +66,14 @@ typedef struct{
 }State;
 
 
-void pe_ecs_init(uint32_t component_count, uint32_t bitmask); //init ecs system, takes in N number of components and a bitmask showing what components are used
+void pe_ecs_init(uint32_t component_count, ...); //init ecs system, takes in N number of components and a bitmask showing what components are used
 
 Entity pe_ecs_create(); //create an entity
+
+
+void * pe_ecs_GetComponent(uint32_t entity_id, uint8_t component_id);
+
+void pe_ecs_AddComponent(uint32_t entity_id, uint8_t component_id, void * data);
 
 SpaceComponent * pe_ecs_GetSpaceComp(uint32_t entity_id);
 

@@ -28,7 +28,6 @@ void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
 	glGenVertexArrays(1, vao);
 	glGenBuffers(1, vbo);
 	glGenBuffers(1, ebo);
-    printf("error: %d\n", glGetError());
 
 	glBindVertexArray(*vao);
 
@@ -44,7 +43,6 @@ void pe_init_rect(unsigned int *vao, unsigned int *vbo, unsigned int *ebo){
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
 	glBindVertexArray(0);
-    printf("error: %d\n", glGetError());
 }
 
 void pe_init(void){
@@ -176,9 +174,6 @@ void pe_drawCircle(float cx, float cy, float r, int num_segments)
 }
 
 void pe_drawRect(pe_vec2  position, pe_vec2 size, pe_vec4 color){
-    /*SDL_SetRenderDrawColor(renderer, r, g ,b, a);
-    SDL_RenderDrawRect(renderer, rect);*/
-    //printf("%f, %f, %f,%f\n", position[0], position[1], size[0], size[1]); 
     pe_vec4 GLcolor = {color[0]/255, color[1]/255, color[2]/255, color[3]/255};
 
     pe_UseShaderProgram(shader_default);

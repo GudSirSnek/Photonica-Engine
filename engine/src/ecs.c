@@ -4,26 +4,41 @@
 #include "util.h"
 #include <stdarg.h>
 
+
 #define INITIAL_CAPACITY 32
 
 
 static State ecs_state = {0};
 
-void pe_ecs_init(uint32_t component_count, uint32_t bitmask){
+void pe_ecs_init(uint32_t component_count, ...){
 	ecs_state.entity_pool = pe_stack_create(sizeof(uint32_t));
 
-	for (int i = INITIAL_CAPACITY; i> 0; i--){
+	for (int i = INITIAL_CAPACITY; i>= 0; i--){
 		pe_stack_push(ecs_state.entity_pool, &i);
 	}
-
+	
 	ecs_state.entity_store.count = 0;
 	ecs_state.entity_store.cap = INITIAL_CAPACITY;
 	ecs_state.entity_store.flag_array = calloc(INITIAL_CAPACITY, 1); //1 bit per entity
 
 	ecs_state.entity_store.mask_array = calloc(INITIAL_CAPACITY, sizeof(uint32_t));
-	
+	/*
 	ecs_state.component_store.space_components = calloc(INITIAL_CAPACITY, sizeof(SpaceComponent));
 	ecs_state.component_store.color_components = calloc(INITIAL_CAPACITY, sizeof(ColorComponent));
+	*/
+	ecs_state.component_store.sizes = calloc(component_count, sizeof(size_t));
+	ecs_state.component_store.Components = calloc(component_count, sizeof(void*));
+
+	va_list ptr;
+
+	va_start(ptr, component_count);
+	size_t t;
+	for(uint32_t i = 0; i < component_count; i++){
+		t = va_arg(ptr, size_t);
+		ecs_state.component_store.Components[i] = calloc(INITIAL_CAPACITY, t);
+		ecs_state.component_store.sizes[i] = t;
+	}
+	va_end(ptr);
 
 	ecs_state.query_results = calloc(2, sizeof(QueryResult));
 	
@@ -46,7 +61,6 @@ Entity pe_ecs_create(){
 	*/
 	Entity entity;
 	uint32_t id;
-	printf("%d\n", ecs_state.entity_pool->count);
 	id = *(uint32_t*)pe_stack_pop(ecs_state.entity_pool);
 
 	ecs_state.entity_store.count++;
@@ -54,6 +68,24 @@ Entity pe_ecs_create(){
 	ecs_state.entity_store.mask_array[id] = 0;
 	entity.id = id;
 	return entity;
+}
+
+void * pe_ecs_GetComponent(uint32_t entity_id, uint8_t component_id){
+
+	return ((void*)ecs_state.component_store.Components[component_id] + entity_id*ecs_state.component_store.sizes[component_id]);
+
+}
+
+void pe_ecs_AddComponent(uint32_t entity_id, uint8_t component_id, void * data){
+
+	void *ptr = pe_ecs_GetComponent(entity_id, component_id);
+
+	size_t s = ecs_state.component_store.sizes[component_id];
+
+	memcpy(ptr, data,s);
+
+
+	
 }
 
 uint8_t pe_ecs_getFlag(uint32_t entity_id){

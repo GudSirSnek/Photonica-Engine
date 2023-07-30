@@ -22,8 +22,7 @@ int last_frame_time = 0;
 ///////////////////////////////////////////////////////////////////////////////
 // Function to poll SDL events and process keyboard input
 ///////////////////////////////////////////////////////////////////////////////
-SpaceComponent space1 = {{400.0, 300.0}, {50.0, 50.0}};
-ColorComponent color1 = {{255, 0, 255, 255}};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup function that runs once at the beginning of our program
@@ -60,25 +59,13 @@ float SpaceToScreenSpace(int x, int y){
 
 
 void system_draw()
-{
-    
-    //SpaceComponent * pos = pe_ecs_GetSpaceComp(1);
-    //ColorComponent * col = pe_ecs_GetColorComp(1);
-    
-
-    //pe_drawRect(pos->position, pos->size, col->color);
-    //pe_drawRect(space1.position, space1.size, color1.color);
-
-    
-    
+{    
     uint8_t flag;
     for(uint32_t i = 0; i < 32; ++i){
         flag = pe_ecs_getFlag(i);
-        //printf("Flag:%d\n", flag);
-
         if (flag){
-            SpaceComponent * pos = pe_ecs_GetSpaceComp(i);
-            ColorComponent * col = pe_ecs_GetColorComp(i);
+            SpaceComponent * pos = pe_ecs_GetComponent(i, 0);
+            ColorComponent * col = pe_ecs_GetComponent(i, 1);
             pe_drawRect(pos->position, pos->size, col->color);
         }
         
@@ -86,7 +73,7 @@ void system_draw()
 }
 
 void update_systems(){
-    pe_drawRect(space1.position, space1.size, color1.color);
+    
 }
 
 
@@ -101,7 +88,7 @@ int main(int argc, char* args[]) {
     pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
     pe_createRenderer();
 
-    pe_ecs_init(2, 2);
+    pe_ecs_init(2, sizeof(SpaceComponent), sizeof(ColorComponent));
     setup();
     SDL_Event event;
     Entity player = pe_ecs_create();
@@ -109,10 +96,10 @@ int main(int argc, char* args[]) {
     SpaceComponent space = {{400.0, 300.0}, {50.0, 50.0}};
     ColorComponent color = {{255, 0, 255, 255}};
 
+    pe_ecs_AddComponent(player.id, 0, (void*)&space);
+    pe_ecs_AddComponent(player.id, 1, (void*)&color);
+    printf("player id: %d\n", player.id);
 
-    printf("player id:%d\n", player.id);
-    pe_ecs_AddSpaceComp(player.id, &space);
-    pe_ecs_AddColorComp(player.id, &color);
 
     
    

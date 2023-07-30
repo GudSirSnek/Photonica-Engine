@@ -34,7 +34,7 @@ GLuint pe_CreateShaderProg(const char* vertexShaderPath, const char* fragmentSha
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
         pe_printError("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED: %s\n", infoLog);
     }
-    printf("Shader success: %d", success);
+
     // link shaders
     unsigned int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
