@@ -1,6 +1,7 @@
 #include <engine.h>
 #include <stdio.h>
 #include "ecs.h"
+#include "particles.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -57,6 +58,9 @@ float SpaceToScreenSpace(int x, int y){
     return 0;
 }
 
+typedef struct{ //space component holds position and size
+    particle Particle;
+}ParticleComponent;
 
 void system_draw()
 {    
@@ -72,7 +76,30 @@ void system_draw()
     }
 }
 
+void system_draw_part(){
+    uint8_t flag;
+    for(uint32_t i = 0; i < 32; ++i){
+        flag = pe_ecs_getFlag(i);
+        if (flag){
+            ParticleComponent * pos = pe_ecs_GetComponent(i, 2);
+            ColorComponent * col = pe_ecs_GetComponent(i, 1);
+            pe_drawRect(pos->Particle.position, pos->Particle.size, col->color);
+        }
+        
+    }
+    
+}
+
 void update_systems(){
+    uint8_t flag;
+    for(uint32_t i = 0; i < 32; ++i){
+        flag = pe_ecs_getFlag(i);
+        if (flag){
+            ParticleComponent *part = pe_ecs_GetComponent(i, 2);
+            integrate(0.16, part);
+        }
+        
+    }
     
 }
 
@@ -88,18 +115,24 @@ int main(int argc, char* args[]) {
     pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
     pe_createRenderer();
 
-    pe_ecs_init(2, sizeof(SpaceComponent), sizeof(ColorComponent));
+    pe_ecs_init(3, sizeof(SpaceComponent), sizeof(ColorComponent), sizeof(ParticleComponent));
     setup();
     SDL_Event event;
     Entity player = pe_ecs_create();
 
-    SpaceComponent space = {{400.0, 300.0}, {50.0, 50.0}};
+    SpaceComponent space = {{800.0, 200.0}, {50.0, 50.0}};
     ColorComponent color = {{255, 0, 255, 255}};
 
     pe_ecs_AddComponent(player.id, 0, (void*)&space);
     pe_ecs_AddComponent(player.id, 1, (void*)&color);
     printf("player id: %d\n", player.id);
 
+    Entity Part = pe_ecs_create();
+    ParticleComponent partcomp= {{{400, 500}, {0,0}, {0,0}, {5,5}, 0.99, 1}};
+    ColorComponent color1 = {{255, 255, 255, 255}};
+    pe_ecs_AddComponent(Part.id, 1, (void*)&color1);
+    pe_ecs_AddComponent(Part.id, 2, (void*)&partcomp);
+    printf("part id: %d\n", Part.id);
 
     
    
@@ -110,8 +143,24 @@ int main(int argc, char* args[]) {
             case SDL_QUIT:
                 game_is_running = FALSE;
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                
+                int x,y;
+                SDL_GetMouseState(&x, &y);
+                printf("mouse down, %d, %d\n", x, y);
+                for (int i = 1; i <= 4; i++){
+                    float partition = 90;
+                    Entity ent = pe_ecs_create();
+                    float rad = pe_deg_to_rad(i*partition);
+                    printf("velocities:%f, ::::: %f, %f\n",i*partition, sin(rad), cos(rad));
+                    ParticleComponent partcomp = {{{x, y}, {10*sin(rad),10*cos(rad)}, {0,0}, {5,5}, 1, 1}};
+                    ColorComponent color1 = {{255, 255, 255, 255}};
+                    pe_ecs_AddComponent(ent.id, 1, (void*)&color1);
+                    pe_ecs_AddComponent(ent.id, 2, (void*)&partcomp);
+                }
         }
         update();
+        update_systems();
         pe_clearScreen(0, 0, 0, 255);
         
         
@@ -119,8 +168,9 @@ int main(int argc, char* args[]) {
         
         //update_systems();
         //pe_drawRect(space1.position, space1.size, color1.color);
-
+        
         system_draw();
+        system_draw_part();
         //render stuff here
        
         pe_endRender();
