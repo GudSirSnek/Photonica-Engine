@@ -81,8 +81,10 @@ void system_draw_part(){
     for(uint32_t i = 0; i < 32; ++i){
         flag = pe_ecs_getFlag(i);
         if (flag){
+            
             ParticleComponent * pos = pe_ecs_GetComponent(i, 2);
             ColorComponent * col = pe_ecs_GetComponent(i, 1);
+            
             pe_drawRect(pos->Particle.position, pos->Particle.size, col->color);
         }
         
@@ -148,7 +150,7 @@ int main(int argc, char* args[]) {
                 int x,y;
                 SDL_GetMouseState(&x, &y);
                 printf("mouse down, %d, %d\n", x, y);
-                for (int i = 1; i <= 4; i++){
+                for (int i = 1; i <= 1; i++){
                     float partition = 90;
                     Entity ent = pe_ecs_create();
                     float rad = pe_deg_to_rad(i*partition);

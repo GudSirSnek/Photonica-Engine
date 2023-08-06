@@ -30,7 +30,7 @@ typedef struct{//holds color data for the basic rendering
 }ColorComponent;
 
 typedef struct {
-
+    uint32_t Component_count;
     size_t *sizes;
     SpaceComponent *space_components;
     ColorComponent *color_components;
