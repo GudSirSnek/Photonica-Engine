@@ -79,6 +79,8 @@ SpaceComponent * pe_ecs_GetSpaceComp(uint32_t entity_id);
 
 ColorComponent * pe_ecs_GetColorComp(uint32_t entity_id);
 
+uint32_t pe_ecs_getcap();
+
 void pe_ecs_AddSpaceComp(uint32_t entity_id, SpaceComponent *space);
 
 void pe_ecs_AddColorComp(uint32_t entity_id, ColorComponent *color);

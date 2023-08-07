@@ -183,7 +183,7 @@ void pe_drawRect(pe_vec2  position, pe_vec2 size, pe_vec4 color){
     M4x4_translate(model, position[0], position[1], 0);
     //scale matrix
     M4x4_scale_aniso(model, model, size[0], size[1], 1);
-    
+    //printf("draw data: %f, %f, %f, %f, %f, %f, %f\n", position[0], position[1], size[0], size[1], color[0], color[1], color[2]);
     glUniformMatrix4fv(glGetUniformLocation(shader_default, "model"), 1, GL_FALSE, &model[0][0]);
 	glUniform4fv(glGetUniformLocation(shader_default, "color"), 1, GLcolor);
     glBindVertexArray(pe_rect.VAO);

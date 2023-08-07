@@ -78,10 +78,11 @@ void system_draw()
 
 void system_draw_part(){
     uint8_t flag;
-    for(uint32_t i = 0; i < 32; ++i){
+    //printf("\n");
+    for(uint32_t i = 0; i < pe_ecs_getcap(); ++i){
         flag = pe_ecs_getFlag(i);
+        //printf("id: %d, flag: %d    ", i, flag);
         if (flag){
-            
             ParticleComponent * pos = pe_ecs_GetComponent(i, 2);
             ColorComponent * col = pe_ecs_GetComponent(i, 1);
             
@@ -94,11 +95,11 @@ void system_draw_part(){
 
 void update_systems(){
     uint8_t flag;
-    for(uint32_t i = 0; i < 32; ++i){
+    for(uint32_t i = 0; i < pe_ecs_getcap(); ++i){
         flag = pe_ecs_getFlag(i);
         if (flag){
             ParticleComponent *part = pe_ecs_GetComponent(i, 2);
-            integrate(0.16, part);
+            integrate(0.16, &part->Particle);
         }
         
     }
@@ -149,12 +150,12 @@ int main(int argc, char* args[]) {
                 
                 int x,y;
                 SDL_GetMouseState(&x, &y);
-                printf("mouse down, %d, %d\n", x, y);
-                for (int i = 1; i <= 1; i++){
-                    float partition = 90;
+                //printf("mouse down, %d, %d\n", x, y);
+                for (int i = 1; i <= 10; i++){
+                    float partition = 360/10;
                     Entity ent = pe_ecs_create();
                     float rad = pe_deg_to_rad(i*partition);
-                    printf("velocities:%f, ::::: %f, %f\n",i*partition, sin(rad), cos(rad));
+                    //printf("velocities:%f, ::::: %f, %f\n",i*partition, sin(rad), cos(rad));
                     ParticleComponent partcomp = {{{x, y}, {10*sin(rad),10*cos(rad)}, {0,0}, {5,5}, 1, 1}};
                     ColorComponent color1 = {{255, 255, 255, 255}};
                     pe_ecs_AddComponent(ent.id, 1, (void*)&color1);

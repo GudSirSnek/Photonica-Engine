@@ -5,7 +5,7 @@
 #include <stdarg.h>
 
 
-#define INITIAL_CAPACITY 32-1
+#define INITIAL_CAPACITY 32
 
 
 static State ecs_state = {0};
@@ -20,7 +20,7 @@ void pe_ecs_init(uint32_t component_count, ...){
 	ecs_state.component_store.Component_count = component_count;
 	ecs_state.entity_store.count = 0;
 	ecs_state.entity_store.cap = INITIAL_CAPACITY;
-	ecs_state.entity_store.flag_array = calloc(INITIAL_CAPACITY, 1); //1 bit per entity
+	ecs_state.entity_store.flag_array = calloc(INITIAL_CAPACITY, sizeof(uint8_t)); //1 bit per entity
 
 	ecs_state.entity_store.mask_array = calloc(INITIAL_CAPACITY, sizeof(uint32_t));
 	ecs_state.component_store.sizes = calloc(component_count, sizeof(size_t));
@@ -65,7 +65,25 @@ Entity pe_ecs_create(){
 
 	if (ecs_state.entity_store.count == ecs_state.entity_store.cap){
 			//reallocate stuff
-			ecs_state.component_store.Component_count *= 2;
+			
+			uint8_t *new_flag_array = calloc(ecs_state.entity_store.cap*2, sizeof(uint8_t));
+			memcpy(new_flag_array, ecs_state.entity_store.flag_array, ecs_state.entity_store.cap*sizeof(uint8_t));
+
+			uint32_t *new_mask_array = calloc(ecs_state.entity_store.cap*2, sizeof(uint32_t));
+			memcpy(new_mask_array, ecs_state.entity_store.mask_array, ecs_state.entity_store.cap*sizeof(uint32_t));
+
+
+			for(uint32_t i = 0; i < ecs_state.component_store.Component_count; i++){
+				void *new_realloc = calloc(ecs_state.entity_store.cap*2, ecs_state.component_store.sizes[i]);
+				memcpy(new_realloc, ecs_state.component_store.Components[i], ecs_state.entity_store.cap*ecs_state.component_store.sizes[i]);
+				ecs_state.component_store.Components[i] = new_realloc;
+
+			}
+			ecs_state.entity_store.cap *= 2;
+			ecs_state.entity_store.flag_array = new_flag_array;
+			ecs_state.entity_store.mask_array = new_mask_array;
+
+			/*
 			ecs_state.entity_store.cap *= 2;
 			uint8_t *new_flag_array = realloc(ecs_state.entity_store.flag_array, ecs_state.entity_store.cap);
 			if (new_flag_array == NULL){
@@ -83,22 +101,26 @@ Entity pe_ecs_create(){
 				if (new_realloc == NULL){
 					pe_printError("Cannot reallocate component array, ID: ", i);
 				}
+				else{
+					pe_printInfo("component array reallocated\n", NULL);
+				}
 				ecs_state.component_store.Components[i] = new_realloc;
 
 			}
 
 			ecs_state.entity_store.flag_array = new_flag_array;
 			ecs_state.entity_store.mask_array = new_mask_array;
+			*/
 		}
 
 	if (ecs_state.entity_pool->count > 0){
 		id = *(uint32_t*)pe_stack_pop(ecs_state.entity_pool);
 		ecs_state.entity_store.count++;
-		printf("entity id: %d\n", id);	
+		//printf("entity id: %d\n", id);	
 	}
 	else{
 		id = ecs_state.entity_store.count++;
-		printf("entity count: %d, cap: %d\n", ecs_state.entity_store.count, ecs_state.entity_store.cap);
+		//printf("entity count: %d, cap: %d\n", ecs_state.entity_store.count, ecs_state.entity_store.cap);
 		
 	}
 	
@@ -126,6 +148,10 @@ void pe_ecs_AddComponent(uint32_t entity_id, uint8_t component_id, void * data){
 
 
 	
+}
+
+uint32_t pe_ecs_getcap(){
+	return ecs_state.entity_store.cap;
 }
 
 uint8_t pe_ecs_getFlag(uint32_t entity_id){
