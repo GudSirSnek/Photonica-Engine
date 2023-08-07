@@ -1,7 +1,7 @@
 # Hells-Dungeon
 
 
-Developement repository of the game "Hell's Dungeon" (Placeholder) a dungeon crawler rogue-like with pixel graphics and physics.
+Developement repository of the game framework "Photonica".
 
 Dependencies:
 
@@ -34,7 +34,7 @@ The development needed to get a core game development framework going
   
 - world object
 
-- entity system
+- entity component system- Finished
 
 - camera system
 
@@ -43,9 +43,13 @@ The development needed to get a core game development framework going
 - UI system
 
 - physics system
+  -particles system done
+  -aggregate bodies in working
+  rigid bodies to come
+   
 
 ### Further systems
-These systems are additions that are specific for Hell's Dungeon 
+These systems are additions that are specific for Photonica
 
 - world chunk system
 
