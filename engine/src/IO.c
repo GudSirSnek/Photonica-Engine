@@ -30,9 +30,8 @@ int io_write_file(void *buffer, size_t size, const char* path){
     FILE *fp = fopen(path, "wb");
 
     if (!fp || ferror(fp)){
-        pe_printError("cannot write file:", path);
+        pe_printError("cannot write file: %s", path);
     }
-
     size_t chunks_written = fwrite(buffer, size, 1, fp);
 
     fclose(fp);

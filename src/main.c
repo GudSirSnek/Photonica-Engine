@@ -18,7 +18,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 int game_is_running = FALSE;
 int last_frame_time = 0;
-
+float delta_time = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function to poll SDL events and process keyboard input
@@ -45,7 +45,7 @@ void update(void) {
         SDL_Delay(time_to_wait);
 
     // Get a delta time factor converted to seconds to be used to update my objects
-    float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
+    delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
 
     // Store the milliseconds of the current frame
     last_frame_time = SDL_GetTicks();
@@ -99,6 +99,13 @@ void update_systems(){
         flag = pe_ecs_getFlag(i);
         if (flag){
             ParticleComponent *part = pe_ecs_GetComponent(i, 2);
+            if(part->Particle.position[0] >= 800 || part->Particle.position[0] <= 0){
+                part->Particle.velocity[0] *= -1;
+            }
+
+            if(part->Particle.position[1] >= 600 || part->Particle.position[1] <= 0){
+                part->Particle.velocity[1] *= -1;
+            }
             integrate(0.16, &part->Particle);
         }
         
@@ -137,6 +144,13 @@ int main(int argc, char* args[]) {
     pe_ecs_AddComponent(Part.id, 2, (void*)&partcomp);
     printf("part id: %d\n", Part.id);
 
+    Texture test;
+
+    pe_init_texture(&test);
+    pe_create_texture(&test,"../res/textures/smile.png", "../res/shaders/textVshader.s", "../res/shaders/textFshader.s");
+    pe_vec2 texpos = {400, 300};
+    pe_vec2 texsize = {300, 300};
+
     
    
     while (game_is_running) {
@@ -172,8 +186,9 @@ int main(int argc, char* args[]) {
         //update_systems();
         //pe_drawRect(space1.position, space1.size, color1.color);
         
-        system_draw();
-        system_draw_part();
+        //system_draw();
+        //system_draw_part();
+        pe_DrawTexture(&test, texpos, texsize);
         //render stuff here
        
         pe_endRender();
