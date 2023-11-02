@@ -22,6 +22,7 @@ The development needed to get a core game development framework going
 
 - core rendering system
   - shader loading and rendering- finished
+  - basic texture rendering- finished
   
   - primitive rendering
     -rectangles done
