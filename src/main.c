@@ -149,7 +149,7 @@ int main(int argc, char* args[]) {
     pe_init_texture(&test);
     pe_create_texture(&test,"../res/textures/smile.png", "../res/shaders/textVshader.s", "../res/shaders/textFshader.s");
     pe_vec2 texpos = {400, 300};
-    pe_vec2 texsize = {300, 300};
+    pe_vec2 texsize = {119, 119};
 
     
    
