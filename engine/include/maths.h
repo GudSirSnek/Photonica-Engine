@@ -1,4 +1,7 @@
-
+#pragma once
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #define pi 3.14159265358979
 
@@ -25,6 +28,8 @@ void M4x4_identity(M4x4 mat);
 void M4x4_translate(M4x4 mat, float x, float y, float z);
 
 void M4x4_scale_aniso(M4x4 M, M4x4 const a, float x, float y, float z);
+
+void M4x4_ortho(M4x4 M, float l, float r, float b, float t, float n, float f);
 
 void vec4_scale(pe_vec4 r, pe_vec4 const v, float const s);
 void vec4_dup(pe_vec4 r, pe_vec4 const src);

@@ -1,5 +1,7 @@
 #include <engine.h>
 #include <stdio.h>
+#include "ecs.h"
+#include "particles.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -11,17 +13,12 @@
 #define FRAME_TARGET_TIME (1000 / FPS)
 
 
-typedef struct{
-    int x, y;//position
-    SDL_Rect rect;//hitbox
-    //img texture
-}Entity;
 ///////////////////////////////////////////////////////////////////////////////
 // Global variables
 ///////////////////////////////////////////////////////////////////////////////
 int game_is_running = FALSE;
 int last_frame_time = 0;
-
+float delta_time = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Function to poll SDL events and process keyboard input
@@ -48,7 +45,7 @@ void update(void) {
         SDL_Delay(time_to_wait);
 
     // Get a delta time factor converted to seconds to be used to update my objects
-    float delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
+    delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0;
 
     // Store the milliseconds of the current frame
     last_frame_time = SDL_GetTicks();
@@ -61,19 +58,62 @@ float SpaceToScreenSpace(int x, int y){
     return 0;
 }
 
+typedef struct{ //space component holds position and size
+    particle Particle;
+}ParticleComponent;
 
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
+void system_draw()
+{    
+    uint8_t flag;
+    for(uint32_t i = 0; i < 32; ++i){
+        flag = pe_ecs_getFlag(i);
+        if (flag){
+            SpaceComponent * pos = pe_ecs_GetComponent(i, 0);
+            ColorComponent * col = pe_ecs_GetComponent(i, 1);
+            pe_drawRect(pos->position, pos->size, col->color);
+        }
+        
+    }
+}
+
+void system_draw_part(){
+    uint8_t flag;
+    //printf("\n");
+    for(uint32_t i = 0; i < pe_ecs_getcap(); ++i){
+        flag = pe_ecs_getFlag(i);
+        //printf("id: %d, flag: %d    ", i, flag);
+        if (flag){
+            ParticleComponent * pos = pe_ecs_GetComponent(i, 2);
+            ColorComponent * col = pe_ecs_GetComponent(i, 1);
+            
+            pe_drawRect(pos->Particle.position, pos->Particle.size, col->color);
+        }
+        
+    }
+    
+}
+
+void update_systems(){
+    uint8_t flag;
+    for(uint32_t i = 0; i < pe_ecs_getcap(); ++i){
+        flag = pe_ecs_getFlag(i);
+        if (flag){
+            ParticleComponent *part = pe_ecs_GetComponent(i, 2);
+            if(part->Particle.position[0] >= 800 || part->Particle.position[0] <= 0){
+                part->Particle.velocity[0] *= -1;
+            }
+
+            if(part->Particle.position[1] >= 600 || part->Particle.position[1] <= 0){
+                part->Particle.velocity[1] *= -1;
+            }
+            integrate(0.16, &part->Particle);
+        }
+        
+    }
+    
+}
+
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Main function
@@ -84,102 +124,35 @@ int main(int argc, char* args[]) {
     pe_init();
     pe_createWindow("A window", WINDOW_WIDTH, WINDOW_HEIGHT);
     pe_createRenderer();
+
+    pe_ecs_init(3, sizeof(SpaceComponent), sizeof(ColorComponent), sizeof(ParticleComponent));
     setup();
     SDL_Event event;
+    Entity player = pe_ecs_create();
+
+    SpaceComponent space = {{800.0, 200.0}, {50.0, 50.0}};
+    ColorComponent color = {{255, 0, 255, 255}};
+
+    pe_ecs_AddComponent(player.id, 0, (void*)&space);
+    pe_ecs_AddComponent(player.id, 1, (void*)&color);
+    printf("player id: %d\n", player.id);
+
+    Entity Part = pe_ecs_create();
+    ParticleComponent partcomp= {{{400, 500}, {0,0}, {0,0}, {5,5}, 0.99, 1}};
+    ColorComponent color1 = {{255, 255, 255, 255}};
+    pe_ecs_AddComponent(Part.id, 1, (void*)&color1);
+    pe_ecs_AddComponent(Part.id, 2, (void*)&partcomp);
+    printf("part id: %d\n", Part.id);
+
+    Texture test;
+
+    pe_init_texture(&test);
+    pe_create_texture(&test,"../res/textures/smile.png", "../res/shaders/textVshader.s", "../res/shaders/textFshader.s");
+    pe_vec2 texpos = {400, 300};
+    pe_vec2 texsize = {119, 119};
+
     
-    Entity player;
-    player.x = 400;
-    player.y = 300;
-    SDL_Rect temp = {400, 300, 100, 100};
-    player.rect = temp;
-
-
-
-    //shaders
-    // build and compile our shader program
-    // ------------------------------------
-    // vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        pe_printError("ERROR::SHADER::VERTEX::COMPILATION_FAILED: %s\n", infoLog);
-    }
-    // fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    // check for shader compile errors
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        pe_printError("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED: %s\n", infoLog);
-    }
-    // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        pe_printError("ERROR::SHADER::PROGRAM::LINKING_FAILED: %s\n", infoLog);
-    }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-
-    GLuint Program = pe_CreateShaderProg("./res/shaders/Vshader.s", "./res/shaders/Fshader.s");
-
-    float vertices[] = {
-     0.25f, 0.0f, 0.0f,  // top right
-     0.25f, -0.333f, 0.0f,  // bottom right
-     0.0f, -0.333f, 0.0f,  // bottom left
-     0.0f,  0.0f, 0.0f   // top left 
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-    };  
-
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
-    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0); 
-
-    pe_vec2 position = {0,0};
-    pe_vec2 size = {0.5, 0.5};
-    pe_vec4 color = {1,1,0,1};
-
+   
     while (game_is_running) {
        
         SDL_PollEvent(&event);
@@ -187,13 +160,35 @@ int main(int argc, char* args[]) {
             case SDL_QUIT:
                 game_is_running = FALSE;
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                
+                int x,y;
+                SDL_GetMouseState(&x, &y);
+                //printf("mouse down, %d, %d\n", x, y);
+                for (int i = 1; i <= 10; i++){
+                    float partition = 360/10;
+                    Entity ent = pe_ecs_create();
+                    float rad = pe_deg_to_rad(i*partition);
+                    //printf("velocities:%f, ::::: %f, %f\n",i*partition, sin(rad), cos(rad));
+                    ParticleComponent partcomp = {{{x, y}, {10*sin(rad),10*cos(rad)}, {0,0}, {5,5}, 1, 1}};
+                    ColorComponent color1 = {{255, 255, 255, 255}};
+                    pe_ecs_AddComponent(ent.id, 1, (void*)&color1);
+                    pe_ecs_AddComponent(ent.id, 2, (void*)&partcomp);
+                }
         }
         update();
+        update_systems();
         pe_clearScreen(0, 0, 0, 255);
         
-
+        
         pe_startRender();
-        pe_drawRect(position, size, color);
+        
+        //update_systems();
+        //pe_drawRect(space1.position, space1.size, color1.color);
+        
+        //system_draw();
+        //system_draw_part();
+        pe_DrawTexture(&test, texpos, texsize);
         //render stuff here
        
         pe_endRender();
